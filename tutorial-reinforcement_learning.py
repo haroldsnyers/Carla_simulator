@@ -24,7 +24,7 @@ try:
 except IndexError:
     pass
 
-# ==============================================================================
+# ======================================c========================================
 # -- imports -------------------------------------------------------------------
 # ==============================================================================
 
@@ -38,6 +38,7 @@ import tensorflow as tf
 from threading import Thread
 
 from tutorial_reninforcement_learning_1 import DQNAgent
+from tqdm import tqdm
 
 # whether or not we want to display the camera as it will take resources
 SHOW_PREVIEW = False
@@ -74,7 +75,7 @@ class CarEnv:
     def __init__(self):
         # connect to server
         self.client = carla.Client('localhost', 2000)
-        self.client.set_timeout(2.0)
+        self.client.set_timeout(5.0)
 
         # Once we have a client we can retrieve the world that is currently
         # running.
@@ -98,7 +99,7 @@ class CarEnv:
         self.vehicle = self.world.spawn_actor(self.model_3, self.transform)
         self.actor_list.append(self.vehicle)
 
-        self.rgb_cam = self.blueprint_library().find('sensor.camera.rgb')
+        self.rgb_cam = self.blueprint_library.find('sensor.camera.rgb')
 
         self.rgb_cam.set_attribute('image_size_x', f'{self.im_width}')
         self.rgb_cam.set_attribute('image_size_y', f'{self.im_height}')
@@ -120,7 +121,7 @@ class CarEnv:
         # to not detect a collision when the car spawns/falls from sky. which happens quite often
         time.sleep(4)
 
-        colsensor = self.world.get_blueprint_library().find('sensor.other.collision')
+        colsensor = self.blueprint_library.find('sensor.other.collision')
         self.colsensor = self.world.spawn_actor(colsensor, transform, attach_to=self.vehicle)
         self.actor_list.append(self.colsensor)
         self.colsensor.listen(lambda event: self.collision_data(event))
