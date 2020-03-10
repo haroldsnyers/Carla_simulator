@@ -37,7 +37,7 @@ import keras.backend.tensorflow_backend as backend
 import tensorflow as tf
 from threading import Thread
 
-from tutorial_reninforcement_learning_1 import DQNAgent
+from DQN_agent import DQNAgent
 from tqdm import tqdm
 
 # whether or not we want to display the camera as it will take resources
