@@ -58,5 +58,10 @@ tensorboard --logdir==logs/
 
 If everything goes well, a message should appear telling you where you can go to view you tensorboard. 
 
-On your tensorboard 
+On your tensorboard you will be able to see something like this : 
+![alt text](https://github.com/snihar2/Carla_simulator/blob/master/tensorboard%20example.png)
 
+## look how your model is training
+This can be done with the last script named _model_viewer_
+
+Again to run it, same as before. An image viewer will then open with the view of the camera on the car. Before you can run it, you will need to specify the path to model that has been created during you car environment run (thus under the folder /model)
