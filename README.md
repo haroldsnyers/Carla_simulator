@@ -28,9 +28,9 @@ We have 3 classes and 1 script to view our model.
 To run the code, first you need to place this folder where you have installed your carla application. More precisely, in the folder **PythonAPI**, same folder as carla's examples. 
 
 Next, you need to install the needed libraries to run your code, especially the following 
-tqdm==4.43
-tensorflow==1.14 (not higher otherwise will not work, or you will have to change multiple things)
-Keras==2.2.5
+- tqdm==4.43
+- tensorflow==1.14 (not higher otherwise will not work, or you will have to change multiple things)
+- Keras==2.2.5
 
 To install them on your python 3.7, you can use the following command
 
