@@ -153,7 +153,7 @@ class CarEnv:
         actor_we_collide_against = event.other_actor
         impulse = event.normal_impulse
         intensity = math.sqrt(impulse.x ** 2 + impulse.y ** 2 + impulse.z ** 2)
-        dict = {"episode": episode, "actor_collided": actor_we_collide_against.type, "intensity": intensity}
+        dict = {"episode": episode, "actor_collided": actor_we_collide_against, "intensity": intensity}
         json1 = json.dumps(dict)
         f = open("dict.json", 'w')
         f.write(json1)
