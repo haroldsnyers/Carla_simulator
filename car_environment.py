@@ -45,7 +45,7 @@ SHOW_PREVIEW = False
 IMG_WIDTH = 640
 IMG_HEIGHT = 480
 
-SECONDS_PER_EPISODE = 10
+SECONDS_PER_EPISODE = 15
 
 MEMORY_FRACTION = 0.8
 EPISODES = 100
@@ -62,7 +62,7 @@ AGGREGATE_STATS_EVERY = 10
 
 class CarEnv:
     SHOW_CAM = SHOW_PREVIEW
-    # full turns
+    # full turns -> need to change this if we want sth more precise
     STEER_AMT = 1.0
 
     im_width = IMG_WIDTH
@@ -87,15 +87,21 @@ class CarEnv:
 
         # Now let's filter all the blueprints of type 'vehicle' and choose one
         # at random.
-        #print(blueprint_library.filter('vehicle'))
+        # print(blueprint_library.filter('vehicle'))
         self.model_3 = self.blueprint_library.filter('model3')[0]
 
+    # method either at the very beginning of the environment or after we have returned a done flag, if we want to run
+    # another episode so to speak
     def reset(self):
+        # if any collision is detected, it's considered as fail (collision can sometimes only be sth like going uphill
+        # really fast which kind of makes the car bump
         self.collision_hist = []
+        # collect actors so we can clean them up at the end
         self.actor_list = []
 
         # spawn point
         self.transform = random.choice(self.world.get_map().get_spawn_points())
+        # vehicle in world defined by model and spawn location
         self.vehicle = self.world.spawn_actor(self.model_3, self.transform)
         self.actor_list.append(self.vehicle)
 
@@ -108,6 +114,7 @@ class CarEnv:
         # specify spawn point of camera
         transform = carla.Transform(carla.Location(x=2.5, z=0.7))
 
+        # sensor in world defined by type of sensor, location (relative to vehicle)
         self.sensor = self.world.spawn_actor(self.rgb_cam, transform, attach_to=self.vehicle)
 
         self.actor_list.append(self.sensor)
@@ -138,6 +145,11 @@ class CarEnv:
         return self.front_camera
 
     def collision_data(self, event):
+        actor_we_collide_against = event.other_actor
+        print(actor_we_collide_against)
+        impulse = event.normal_impulse
+        intensity = math.sqrt(impulse.x ** 2 + impulse.y ** 2 + impulse.z ** 2)
+        print(intensity)
         self.collision_hist.append(event)
 
     def process_img(self, image):
@@ -150,24 +162,33 @@ class CarEnv:
             cv2.waitKey(1)
         self.front_camera = i3  # normalize
 
-    # methods takes an action and then returns an observation, reward, done, any_extra_info as for the usual
-    # learning paradigm
+    # methods takes an action, does something with that action and then returns the next observation, reward, done
+    # (flag, true or false -> telling the environment if we successfully finished or that we died or ran out of time,
+    # any_extra_info as for the usual learning paradigm
     def step(self, action):
-        '''
+        """
         For now let's just pass steer left, center, right?
         0, 1, 2
-        '''
+        """
+        # make turns smoother
+        steer_amount = [0.2*i for i in range(1, 6)]
         if action == 0:
-            self.vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=-1 * self.STEER_AMT))
+            self.vehicle.apply_control(
+                carla.VehicleControl(throttle=1.0, steer=-1 * self.STEER_AMT * random.choice(steer_amount)))
         if action == 1:
             self.vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=0))
         if action == 2:
-            self.vehicle.apply_control(carla.VehicleControl(throttle=1.0, steer=1*self.STEER_AMT))
+            self.vehicle.apply_control(
+                carla.VehicleControl(throttle=1.0, steer=1 * self.STEER_AMT * random.choice(steer_amount)))
 
         v = self.vehicle.get_velocity()
         kmh = int(3.6 * math.sqrt(v.x**2 + v.y**2 + v.z**2))
 
+        # episode is done when collision is detected or time is completed
+
         # for now, if any collision is detected, we stop
+        # TODO develop collision event detection to filter down collision actors
+        # TODO add invasion sensor to detect when vehicle trespasses lane lines
         if len(self.collision_hist) != 0:
             done = True
             reward = -200
