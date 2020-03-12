@@ -49,8 +49,11 @@ SECONDS_PER_EPISODE = 15
 
 MEMORY_FRACTION = 0.8
 EPISODES = 100
+
+# epsilon needed to make the agent learn, the higher it is, the more likely the agent will on random moves,
+# and in time this epsilon will decrease to enable the agent to learn and make more appropriate moves
 epsilon = 1
-EPSILON_DECAY = 0.95 ## 0.9975 99975
+EPSILON_DECAY = 0.95
 MIN_EPSILON = 0.001
 
 MODEL_NAME = "Xception"
@@ -306,7 +309,7 @@ if __name__ == '__main__':
                 agent.model.save(
                     f'models/{MODEL_NAME}__{max_reward:_>7.2f}max_{average_reward:_>7.2f}avg_{min_reward:_>7.2f}min__{int(time.time())}.model')
 
-        # Decay epsilon
+        # Decay epsilon -> makes agent act on less random moves
         if epsilon > MIN_EPSILON:
             epsilon *= EPSILON_DECAY
             epsilon = max(MIN_EPSILON, epsilon)

@@ -25,6 +25,9 @@ MIN_REWARD = -200
 
 DISCOUNT = 0.99
 
+# how many choices (actions) -> number of neurons at output
+ACTION_SPACE = 3
+
 
 class DQNAgent:
     def __init__(self):
@@ -52,7 +55,7 @@ class DQNAgent:
         x = GlobalAveragePooling2D()(x)
 
         # adding the 3 neuron output (each possible action for the agent to take)
-        predictions = Dense(3, activation="linear")(x)
+        predictions = Dense(ACTION_SPACE, activation="linear")(x)
         model = Model(inputs=base_model.input, outputs=predictions)
         model.compile(loss="mse", optimizer=Adam(lr=0.001), metrics=["accuracy"])
         return model
