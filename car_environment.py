@@ -37,6 +37,8 @@ import keras.backend.tensorflow_backend as backend
 import tensorflow as tf
 from threading import Thread
 
+import json
+
 from DQN_agent import DQNAgent
 from tqdm import tqdm
 
@@ -95,7 +97,7 @@ class CarEnv:
 
     # method either at the very beginning of the environment or after we have returned a done flag, if we want to run
     # another episode so to speak
-    def reset(self):
+    def reset(self, episode):
         # if any collision is detected, it's considered as fail (collision can sometimes only be sth like going uphill
         # really fast which kind of makes the car bump
         self.collision_hist = []
@@ -134,7 +136,7 @@ class CarEnv:
         colsensor = self.blueprint_library.find('sensor.other.collision')
         self.colsensor = self.world.spawn_actor(colsensor, transform, attach_to=self.vehicle)
         self.actor_list.append(self.colsensor)
-        self.colsensor.listen(lambda event: self.collision_data(event))
+        self.colsensor.listen(lambda event: self.collision_data(event, episode))
 
         # make sure to wait until all is setup
         while self.front_camera is None:
@@ -147,12 +149,15 @@ class CarEnv:
 
         return self.front_camera
 
-    def collision_data(self, event):
+    def collision_data(self, event, episode):
         actor_we_collide_against = event.other_actor
-        print(actor_we_collide_against)
         impulse = event.normal_impulse
         intensity = math.sqrt(impulse.x ** 2 + impulse.y ** 2 + impulse.z ** 2)
-        print(intensity)
+        dict = {"episode": episode, "actor_collided": actor_we_collide_against.type, "intensity": intensity}
+        json1 = json.dumps(dict)
+        f = open("dict.json", 'w')
+        f.write(json1)
+        f.close()
         self.collision_hist.append(event)
 
     def process_img(self, image):
@@ -258,7 +263,7 @@ if __name__ == '__main__':
         step = 1
 
         # Reset environment and get initial state
-        current_state = env.reset()
+        current_state = env.reset(episode)
 
         # Reset flag and start iterating until episode ends
         done = False
