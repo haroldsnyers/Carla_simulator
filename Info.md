@@ -37,3 +37,6 @@ The DQN neural network model is a regression model, which typically will output 
 "where our Q-Learning algorithm could learn something in minutes, it will take our DQN hours. We will want to learn DQNs, however, because they will be able to solve things that Q-learning simply cannot...and it doesn't take long at all to exhaust Q-Learning's potentials."
 
 https://pythonprogramming.net/deep-q-learning-dqn-reinforcement-learning-python-tutorial/?completed=/own-environment-q-learning-reinforcement-learning-python-tutorial/ 
+
+### tensorboard 
+Is used to help us visualize the training of our model over time
