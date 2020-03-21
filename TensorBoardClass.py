@@ -3,7 +3,7 @@ import tensorflow as tf
 
 
 
-# Own Tensorboard class
+# Own Tensorboard class to write log at every step and not per .fit()
 class ModifiedTensorBoard(TensorBoard):
 
     # Overriding init to set initial step and writer (we want one log file for all .fit() calls)

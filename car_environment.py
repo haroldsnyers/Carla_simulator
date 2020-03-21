@@ -249,7 +249,7 @@ if __name__ == '__main__':
     agent.get_qs(np.ones((env.im_height, env.im_width, 3)))
 
     # Iterate over episodes
-    # Iterate over episodes
+    # changing the chars to use ASCII (for our Windows users) and then calling the "unit" an "episode.
     for episode in tqdm(range(1, EPISODES + 1), ascii=True, unit='episodes'):
         # try:
 
@@ -278,9 +278,9 @@ if __name__ == '__main__':
                 action = np.argmax(agent.get_qs(current_state))
             else:
                 # Get random action
-                action = np.random.randint(0, 3)
+                action = np.random.randint(0, agent.ACTION_SPACE)
                 # This takes no time, so we add a delay matching 60 FPS (prediction above takes longer)
-                time.sleep(1 / FPS)
+                # time.sleep(1 / FPS)
 
             new_state, reward, done, _ = env.step(action)
 
